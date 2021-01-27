@@ -1,6 +1,9 @@
-# SPapi v1.1.0
+# SPapi v1.1.2
+
+Модуль создан Spagetik для серверов СП, СПм, СПк.
+
 ## 1. Начало работы
-### 1.1 Установка и импортирование
+### 1.1 Установка и импортирование модуля
 
 Для начала работы с модулем нужно установить сам модуль командой:
 
@@ -13,186 +16,159 @@
 $ sudo apt pip3 install SPapi
 ```
 
-
-После установки модуля следует его импортировать класс SpApi из модуля:
+После установки модуля следует импортировать все классы из модуля:
 ```python
-from SPapi import SpApi
+from SPapi import *
 ```
-
 Сразу после импортирования следует создать переменные **server**, **token**, **response_key**:
 ```python
+from SPapi import *
+
 token = 'Your_Token'
 server = 'Your_Server'
 response_key = 'Your_Response_Key'
-```
 
-Токен  ключ ответа можно узнать на этой [странице](https://spk.jakksoft.com/dev/apps).
-
-В случае, если у вас ещё нет приложения, создайте его [здесь](https://spk.jakksoft.com/dev/apps). Для создания приложения требуется **роль разработчика**, тикет для получения роли можно создать [здесь](https://spk.jakksoft.com/support/new_ticket).
-
-В параметре **server** укажите сервер для которого используется API:
- - СП - 'sp'
- - СПм - 'spm'
- - СПк - 'spk'
-
-### 1.2 Создание переменной для обработки запросов
-
-Для создания переменной для обработки запросов потребуется написать следущее:
-```python
 api = SpApi(server, token, response_key)
 ```
+| Param | Type | Description |
+| --- | --- | --- |
+| server | <code>Str</code> | Сервер с которым будет работать API. ('sp', 'spm', 'spk') |
+| token | <code>Str</code> | Секретный TOKEN вашего приложения. Получить [здесь](https://spk.jakksoft.com/dev/apps).|
+| response_key | <code>Str</code> | Ключ ответа. Используется для проверки подлинности источника серверного ответа.  Получить [здесь](https://spk.jakksoft.com/dev/apps). |
 
-### 1.3 Отправка тестового запроса
+### 1.2 Пример отправки тестового запроса
 
-Для оправки тестового запроса потребуется написать следующий код:
+Код:
 ```python
-response = api.test()
+from SPapi import *
 
-print(response)
-```
+token = 'Your_Token'
+server = 'Your_Server'
+response_key = 'Your_Response_Key'
 
-После выполнения этого кода в консоле должно вывестись:
-```commandline
-{'success': True, 'response_key': 'CrzmtXg2Stw909omziWnVdig', 'data': ['Hello world!'], 'errors': []}
-```
-Если тестовый запрос отправился и пришел ответ, **поздравляю, вы сделали все правильно!**
+api = SpApi(server, token, response_key)
 
-## 2. Описание функций класса SpApi
-
-### 2.1 Функция 'test()'
-
-Данная функция является тестовой, для проверки соединения с сайтом. У неё нет параметров которые нужно указывать.
-
-Пример кода:
-```python
 response = api.test()
 
 print(response)
 ```
 Пример вывода:
 ```commandline
-{'success': True, 'response_key': 'CrzmtXg2Stw909omziWnVdig', 'data': ['Hello world!'], 'errors': []}
+<success=True>
+<response_key=kaSfzshJQXWOU8OOTcZy2IPq>
+<data=['Hello world!']>
 ```
 
-### 2.2 Функция 'permission_test(your_license_key: str)'
+## 2. Классы модуля
 
-Данная функция является второй тестовой функцией, для проверки соединения с сайтом. Функция требует параметр **your_license_key**, который является **ВАШИМ ключом лицензии** к **ВАШЕМУ приложению**.
+### <a href="#SpApi">SpApi</a>
 
-- **your_license_key** - строка!
+Основной класс модуля для оправки запросов на сайт.
 
-Пример кода:
-```python
-your_license_key = 'hsjhfdjsdfsjjdf'
+### <a href="#Response">Response</a>
 
-response = api.permission_test(your_license_key)
+Класс получаемых ответов с сервера. Нужен для удобства получения данных с сервера.
 
-print(response)
-```
-Пример ответа при выданном праве "Тестовое разрешение":
-```commandline
-{'success': True, 'response_key': 'CrzmtXg2Stw909omziWnVdig', 'data': ['Ваше приложение имеет тестовое разрешение!'], 'errors': []}
-```
-Пример ответа при невыданном праве "Тестовое разрешение":
-```commandline
-{'success': False, 'response_key': 'CrzmtXg2Stw909omziWnVdig', 'data': [], 'errors': ['Приложению не предоставлен доступ на "тестовое разрешение".']}
-```
+### <a href="#Card">Card</a>
 
-### 2.3 Функция 'pay(sp_pay_code: int, summa: int, trans_mes='Оплата SP-pay')'
+Класс для удобного доступа к данным карт, запрошенным методом <a href="#get_cards_info">get_cards_info()</a>.
 
-####Обязательно:
+### <a href="#Notify">Notify</a>
 
-- **sp_pay_code** - код, полученный на сайте (int)
-- **summa** - сумма оплаты (int). ВАЖНО! Сумма при получении кода и при отправке запроса должный быть одинаковыми!
+Класс для удобного доступа к данным карт, запрошенным методом <a href="#get_unread_notifications">get_unread_notifications()</a>.
 
-####Опционально:
+## 3. Методы классов
 
-- **trans_mes** - Сообщение, сопровождающее платёж (str)
+### 3.1 Класс <a href="#SpApi" name="SpApi">SpApi</a>
 
-Пример кода:
-```python
-sp_pay_code = 123456
-summa = 64
-trans_mes = 'ЛИХ'
+#### 3.1.1 <a href="#test" name="test">test()</a> ⇒  <a href="#Response">Response</a>
+Тестовый метод для проверки работоспособности кода и соединения с сайтом. Не требует дополнительных аргументов.
 
-response = api.pay(sp_pay_code, summa, trans_mes)
+#### 3.1.2 <a href="#permission_test" name="permission_test">permission_test()</a> ⇒ <a href="#Response">Response</a>
+Тестовый метод для проверки выданных вами разрешений приложению. Требует дополнительные аргументы: `your_license_key`
 
-print(response)
-```
-Пример ответа при успешной транзакции:
-```commandline
-{'success': True, 'response_key': 'CrzmtXg2Stw909omziWnVdig', 'data': ['Транзакция успешно совершена.'], 'errors': []}
-```
+| Param | Type | Description |
+| --- | --- | --- |
+|your_license_key|<code>str</code>| ВАШ ключ-лицензия. Найти можно [тут](https://spk.jakksoft.com/settings#collapseApps).
 
-### 2.4 Функция 'get_permission(license_key: str, permission_id: int)'
+#### 3.1.3 <a href="#pay" name="pay">pay()</a> ⇒ <a href="#Response">Response</a>
+Метод для оплаты через SP-pay. Требует дополнительные аргументы: `sp_pay_code`, `summa`, `trans_mes`
 
-Функция запроса разрешений.
+| Param | Type | Description |
+| --- | --- | --- |
+|sp_pay_code|<code>int</code>|Код, полученный игроком на сайте.
+|summa|<code>int</code>|Сумма оплаты. ВАЖНО! Должна соответствовать сумме указанной, при получении кода
+|trans_mes|<code>str</code>|Сообщение, сопровождающее транзакцию оплаты. (Опционально)|
 
-####Обязательно:
-- **license_key** - Ключ-лицензия игрока, у которого запрашивают доступ к разрешениям (str)
-- **permission_id** - id запрашиваемого разрешения (int)
-    - 1 - Тестовое разрешение
-    - 2 - Чтение информации о банковских счетах
-    - 3 - Чтение новых уведомлений
-    - 4 - Пометка новых уведомлений прочитанными
+#### 3.1.4 <a href="#get_permission" name="get_permission">get_permission()</a> ⇒ <a href="#Response">Response</a>
+Метод для запроса разрешений у пользователя. Требует дополнительные аргументы: `license_key`, `permission_id`
 
-Пример кода:
-```python
-license_key = 'kdehjfjksdhjsfj'
-permission_id = 1
+| Param | Type | Description |
+| --- | --- | --- |
+|license_key|<code>str</code>|Ключ-лицензия игрока, у которого запрашиваются разрешения.|
+|permission_id|<code>int</code>|id требуемого разрешения. Посмотреть все разрешения можно [тут](https://spk.jakksoft.com/dev/permissions).|
 
-response = api.get_permission(license_key, permission_id)
-```
+#### 3.1.5 <a href="#get_cards_info" name="get_cards_info">get_cards_info()</a> ⇒ <a href="#Response">Response</a>
+Метод для запроса информации о картах игрока. Требует дополнительные аргументы: `license_key`
 
-### 2.5 Функция 'get_cards_info(license_key: str)'
+| Param | Type | Description |
+| --- | --- | --- |
+|license_key|<code>str</code>|Ключ-лицензия игрока, у которого запрашиваются данные.|
 
-Функция для получения информации о счетах игрока.
+#### 3.1.6 <a href="#get_cards_info" name="get_cards_info">get_cards_info()</a> ⇒ <a href="#Response">Response</a>
+Метод для запроса непрочитанных уведомлений игрока. Требует дополнительные аргументы: `license_key`
 
-####Обязательно:
-- **license_key** - Ключ-лицензия игрока, у которого запрашивают доступ к информации о картах (str)
+| Param | Type | Description |
+| --- | --- | --- |
+|license_key|<code>str</code>|Ключ-лицензия игрока, у которого запрашиваются данные.|
 
-Пример кода:
-```python
-license_key = 'kdehjfjksdhjsfj'
+#### 3.1.7 <a href="#get_cards_info" name="get_cards_info">get_cards_info()</a> ⇒ <a href="#Response">Response</a>
+Метод для пометки непрочитанных уведомлений игрока как прочитанные. Требует дополнительные аргументы: `license_key`
 
-response = api.get_cards_info(license_key)
-```
+| Param | Type | Description |
+| --- | --- | --- |
+|license_key|<code>str</code>|Ключ-лицензия игрока, у которого запрашиваются данные.|
 
-### 2.6 Функция 'get_unread_notifications(license_key: str)'
+## 4. Атрибуты классов
 
-Функция для получения новых уведомлений игрока.
+### 4.1 Класс <a href="#SpApi">SpApi</a>
 
-####Обязательно:
-- **license_key** - Ключ-лицензия игрока, у которого будут получать новые уведомления (str)
+| Param | Type | Description |
+| --- | --- | --- |
+|.server|<code>str</code>|Сервер с которым работает класс.|
+|.token|<code>str</code>|Токен приложения.|
+|.response_key|<code>str</code>|Ключ ответ приложения.|
 
-Пример кода:
-```python
-license_key = 'kdehjfjksdhjsfj'
+### 4.2 Класс <a href="#Response">Response</a>
 
-response = api.get_unread_notifications(license_key)
-```
+| Param | Type | Description |
+| --- | --- | --- |
+|.success|<code>boolean</code>|Удачен ли запрос. True or False.|
+|.response_key|<code>str</code>|Ключ ответ приложения.|
+|.data|<code>list</code><p><code>list of class \<Card><p></code><code>list of class \<Notify></code>|Список данных.<p>Либо список карт пользователя (class \<Card>) при использовании <a href="#get_card_info">get_card_info()</a><p>Либо список уведомлений пользователя (class \<Notify>) при использовании <a href="#get_unread_notifications">get_unread_notifications()</a>|
+|.errors|<code>list</code>|Список ошибок, если есть.|
 
-### 2.7 Функция 'mark_notifications_as_read(license_key: str)'
+### 4.3 Класс <a href="#Card">Card</a>
 
-Функция для пометки новых уведомлений игрока прочитанными.
+| Param | Type | Description |
+| --- | --- | --- |
+|.id|<code>int</code>|ID Счета игрока.|
+|.name|<code>str</code>|Название счета игрока. |
+|.balance|<code>int</code>|Баланс счета игрока.|
+|.bg_color|<code>str</code>|Цвет фона карты в формате `#xxxxxx`.|
+|.font_color|<code>str</code>|Цвет текста карты в формате `#xxxxxx`.|
+|.image|<code>str</code>|Ссылка на изображение фона карты.|
 
-####Обязательно:
-- **license_key** - Ключ-лицензия игрока, у которого новые уведомления будут отмечаться прочитанными (str)
+### 4.4 Класс <a href="#Notify">Notify</a>
 
-Пример кода:
-```python
-license_key = 'kdehjfjksdhjsfj'
+| Param | Type | Description |
+| --- | --- | --- |
+|.id|<code>int</code>|ID уведомления.|
+|.type|<code>int</code>|Тип уведомления.|
+|.type_title|<code>str</code>|Название типа уведомления.|
+|.message|<code>str</code>|	Текст уведомления.|
+|.time|<code>int</code>|Unix-время когда пришло уведомление в секундах.|
 
-response = api.mark_notifications_as_read(license_key)
-```
+# Made with love by Spagetik from SPk ♥
 
-## 3. Немного про возвращаемое значение функциями
 
-При удачном выполнении функции будет возвращаться json ответ в виде словаря (dict). Получить доступ к информации можно будет по ключам словаря:
-- **success** - Успешен ли запрос (true / false)
-- **response_key** - Секретный RESPONSE ключ вашего приложения
-- **data** - Массив возвращаемых данных
-- **errors** - 	Массив ошибок (при success == false)
-
-В случае, если **response_key** ответе будет неверным, выведется `response_key error!`
-
-Подробнее про данные, возвращаемые каждой функцией, можно глянуть [здесь](https://spk.jakksoft.com/dev/docs)
